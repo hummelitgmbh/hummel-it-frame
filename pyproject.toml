@@ -15,6 +15,7 @@ dependencies = [
 
 [project.scripts]
 hummel-it-frame = "hummel_it_frame.main:main"
+hummel-it-frame-display = "hummel_it_frame.display.service:main"
 
 [dependency-groups]
 dev = [
