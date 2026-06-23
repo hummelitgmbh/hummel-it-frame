@@ -1,0 +1,28 @@
+[Unit]
+Description=Hummel IT Frame fullscreen display service
+Documentation=file:/usr/share/doc/hummel-it-frame/systemd.md
+After=systemd-user-sessions.service hummel-it-frame.service
+Wants=hummel-it-frame.service
+
+[Service]
+Type=simple
+# Hummel IT Frame loads /etc/hummel-it-frame/config.yaml by default.
+User=hummel-it-frame
+Group=hummel-it-frame
+SupplementaryGroups=video input
+WorkingDirectory=/var/lib/hummel-it-frame
+ExecStart=/usr/local/bin/hummel-it-frame-display
+Restart=on-failure
+RestartSec=5s
+StateDirectory=hummel-it-frame
+ConfigurationDirectory=hummel-it-frame
+RuntimeDirectory=hummel-it-frame-display
+UMask=0027
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=full
+ReadWritePaths=/var/lib/hummel-it-frame
+
+[Install]
+WantedBy=multi-user.target

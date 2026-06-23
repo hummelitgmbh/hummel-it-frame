@@ -1,0 +1,27 @@
+[Unit]
+Description=Hummel IT Frame web service
+Documentation=file:/usr/share/doc/hummel-it-frame/systemd.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Hummel IT Frame loads /etc/hummel-it-frame/config.yaml by default.
+User=hummel-it-frame
+Group=hummel-it-frame
+WorkingDirectory=/var/lib/hummel-it-frame
+ExecStart=/usr/local/bin/hummel-it-frame
+Restart=on-failure
+RestartSec=5s
+StateDirectory=hummel-it-frame
+ConfigurationDirectory=hummel-it-frame
+RuntimeDirectory=hummel-it-frame
+UMask=0027
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=full
+ReadWritePaths=/var/lib/hummel-it-frame
+
+[Install]
+WantedBy=multi-user.target
