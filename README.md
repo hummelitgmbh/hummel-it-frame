@@ -61,6 +61,59 @@ Hummel IT Frame follows a different approach:
 * Raspberry Pi 5
 * Raspberry Pi OS Lite
 
+## Local Installation v0.1
+
+The v0.1 installer prepares runtime directories, installs a default
+configuration file, installs the main systemd service, and reloads systemd.
+It does not install Debian packages or configure Nextcloud, WLAN, OTA updates,
+authentication, or a web frontend.
+
+Run it as root from a checked-out release or source tree:
+
+```bash
+sudo scripts/install.sh
+```
+
+The installer creates:
+
+```text
+/etc/hummel-it-frame
+/var/lib/hummel-it-frame
+/var/lib/hummel-it-frame/images
+/var/lib/hummel-it-frame/tmp
+```
+
+It installs the default configuration to:
+
+```text
+/etc/hummel-it-frame/config.yaml
+```
+
+If a configuration file already exists, the installer creates a timestamped
+backup before replacing it.
+
+The main service file is installed to:
+
+```text
+/etc/systemd/system/hummel-it-frame.service
+```
+
+After installation, enable and start the service:
+
+```bash
+sudo systemctl enable hummel-it-frame.service
+sudo systemctl start hummel-it-frame.service
+```
+
+View logs with:
+
+```bash
+journalctl -u hummel-it-frame.service -f
+```
+
+The service expects the application entrypoint to be available at
+`/usr/local/bin/hummel-it-frame`.
+
 ## Roadmap
 
 ### v0.1
