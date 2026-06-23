@@ -2,10 +2,15 @@
 
 from fastapi import FastAPI
 
-app = FastAPI(title="Hummel IT Frame")
+from hummel_it_frame.web.routes import router
 
 
-@app.get("/api/status")
-def get_status() -> dict[str, str]:
-    """Return application health status."""
-    return {"status": "ok"}
+def create_app() -> FastAPI:
+    """Create and configure the FastAPI application."""
+    fastapi_app = FastAPI(title="Hummel IT Frame")
+    fastapi_app.include_router(router)
+
+    return fastapi_app
+
+
+app = create_app()
