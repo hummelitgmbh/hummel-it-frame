@@ -114,6 +114,16 @@ journalctl -u hummel-it-frame.service -f
 The service expects the application entrypoint to be available at
 `/usr/local/bin/hummel-it-frame`.
 
+## Testing
+
+Run the automated MVP test suite with:
+
+```bash
+uv run pytest
+```
+
+The current coverage scope is documented in `docs/testing.md`.
+
 ## Roadmap
 
 ### v0.1

@@ -42,6 +42,42 @@ storage:
     assert config.storage.image_directory == "/tmp/hummel-images"
 
 
+def test_load_config_merges_partial_yaml_with_defaults(tmp_path: Path) -> None:
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        """
+display:
+  mode: stretch
+""",
+        encoding="utf-8",
+    )
+
+    config = load_config(config_path)
+
+    assert config.display.mode == "stretch"
+    assert config.slideshow.interval_seconds == 20
+    assert config.storage.image_directory == DEFAULT_IMAGE_DIRECTORY
+
+
+def test_load_config_accepts_empty_yaml_as_defaults(tmp_path: Path) -> None:
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text("", encoding="utf-8")
+
+    config = load_config(config_path)
+
+    assert config.display.mode == "fill"
+    assert config.slideshow.interval_seconds == 20
+    assert config.storage.image_directory == DEFAULT_IMAGE_DIRECTORY
+
+
+def test_load_config_rejects_yaml_that_is_not_a_mapping(tmp_path: Path) -> None:
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text("- invalid\n- config\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="YAML mapping"):
+        load_config(config_path)
+
+
 @pytest.mark.parametrize(
     "yaml_content",
     [
@@ -56,6 +92,14 @@ slideshow:
         """
 storage:
   image_directory: "   "
+""",
+        """
+unknown: true
+""",
+        """
+display:
+  mode: fill
+  brightness: 80
 """,
     ],
 )
