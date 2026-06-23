@@ -64,3 +64,40 @@ def test_get_api_images_returns_available_images(
 
     assert response.status_code == 200
     assert response.json() == ["one.jpg", "two.png"]
+
+
+def test_post_api_images_uploads_supported_image(
+    client: TestClient,
+    image_directory: Path,
+) -> None:
+    response = client.post(
+        "/api/images",
+        files={"file": ("Family Photo.JPG", b"image-content", "image/jpeg")},
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {"filename": "Family_Photo.jpg"}
+    assert (image_directory / "Family_Photo.jpg").read_bytes() == b"image-content"
+
+
+def test_post_api_images_rejects_invalid_file_type(client: TestClient) -> None:
+    response = client.post(
+        "/api/images",
+        files={"file": ("notes.txt", b"not-an-image", "text/plain")},
+    )
+
+    assert response.status_code == 400
+    assert "Unsupported image type" in response.json()["detail"]
+
+
+def test_uploaded_image_appears_in_get_api_images(client: TestClient) -> None:
+    upload_response = client.post(
+        "/api/images",
+        files={"file": ("upload.png", b"image-content", "image/png")},
+    )
+
+    list_response = client.get("/api/images")
+
+    assert upload_response.status_code == 200
+    assert list_response.status_code == 200
+    assert list_response.json() == ["upload.png"]

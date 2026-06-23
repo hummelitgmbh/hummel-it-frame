@@ -2,11 +2,15 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 
 from hummel_it_frame import __version__
 from hummel_it_frame.config import AppConfig
-from hummel_it_frame.storage import StorageService
+from hummel_it_frame.storage import (
+    StorageService,
+    UnsafeFilenameError,
+    UnsupportedImageTypeError,
+)
 from hummel_it_frame.web.dependencies import get_app_config, get_storage_service
 
 router = APIRouter(prefix="/api")
@@ -32,3 +36,20 @@ def get_images(
 ) -> list[str]:
     """Return available image filenames."""
     return storage_service.list_images()
+
+
+@router.post("/images")
+async def upload_image(
+    storage_service: Annotated[StorageService, Depends(get_storage_service)],
+    file: Annotated[UploadFile, File()],
+) -> dict[str, str]:
+    """Store an uploaded image file."""
+    try:
+        stored_path = storage_service.save_image(file.filename or "", await file.read())
+    except (UnsafeFilenameError, UnsupportedImageTypeError) as error:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(error),
+        ) from error
+
+    return {"filename": stored_path.name}

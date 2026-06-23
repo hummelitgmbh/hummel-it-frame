@@ -9,6 +9,7 @@ dependencies = [
     "uvicorn",
     "pygame",
     "pydantic",
+    "python-multipart",
     "pyyaml",
 ]
 
